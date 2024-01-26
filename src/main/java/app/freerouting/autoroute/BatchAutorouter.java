@@ -235,11 +235,13 @@ public class BatchAutorouter {
       Collection<Item> autoroute_item_list = new LinkedList<>();
       Set<Item> handled_items = new TreeSet<>();
       Iterator<UndoableObjects.UndoableObjectNode> it = routing_board.item_list.start_read_object();
-      for (; ; ) {
-        UndoableObjects.Storable curr_ob = routing_board.item_list.read_object(it);
-        if (curr_ob == null) {
-          break;
-        }
+
+
+      //
+      // Loop over all items to add routings
+      //
+     for(UndoableObjects.Storable curr_ob; (curr_ob = routing_board.item_list.read_object(it)) != null; );
+
         if (curr_ob instanceof Connectable && curr_ob instanceof Item) {
           // This is a connectable item, like PolylineTrace or Pin
           Item curr_item = (Item) curr_ob;
@@ -257,7 +259,9 @@ public class BatchAutorouter {
                 }
                 int net_item_count = routing_board.connectable_item_count(curr_net_no);
 
+                //
                 // If the item is not connected to all other items of the net, we add it to the auto-router's to-do list
+                //
                 if ((connected_set.size() < net_item_count) && (!curr_item.has_ignored_nets())) {
                   autoroute_item_list.add(curr_item);
                 }
