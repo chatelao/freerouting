@@ -235,11 +235,8 @@ public class BatchAutorouter {
       Collection<Item> autoroute_item_list = new LinkedList<>();
       Set<Item> handled_items = new TreeSet<>();
       Iterator<UndoableObjects.UndoableObjectNode> it = routing_board.item_list.start_read_object();
-      for (; ; ) {
-        UndoableObjects.Storable curr_ob = routing_board.item_list.read_object(it);
-        if (curr_ob == null) {
-          break;
-        }
+      for ( UndoableObjects.Storable curr_ob = routing_board.item_list.read_object(it); 
+            (curr_ob = routing_board.item_list.read_object(it)) != null; ) {
         if (curr_ob instanceof Connectable && curr_ob instanceof Item) {
           // This is a connectable item, like PolylineTrace or Pin
           Item curr_item = (Item) curr_ob;
