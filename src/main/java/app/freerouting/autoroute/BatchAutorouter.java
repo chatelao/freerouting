@@ -1,4 +1,4 @@
-package app.freerouting.autoroute;
+package app.freerouting.autoroute
 
 import app.freerouting.board.BasicBoard;
 import app.freerouting.board.ConductionArea;
