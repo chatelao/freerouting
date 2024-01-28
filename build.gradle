@@ -122,5 +122,6 @@ tasks.register('run', JavaExec) {
     // arguments to pass to the application
     //    args 'appArg1'
     // jvmArgs 'arg1'
+    jvmArgs '-agentlib:hprof=cpu=samples,lineno=y,depth=3,file=hprof.samples.txt'
 }
 
