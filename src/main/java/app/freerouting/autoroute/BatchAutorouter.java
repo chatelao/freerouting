@@ -249,6 +249,11 @@ public class BatchAutorouter {
             if (!handled_items.contains(curr_item)) {
 
               // Let's go through all nets of this item
+              // 
+              //  curr_item     : Starting item of search
+              //  curr_net_no   : 0..net_count() connection nbre from the starting item
+              //  connected_set : 0..net_count() connection item from the starting item
+              //               
               for (int i = 0; i < curr_item.net_count(); ++i) {
                 int curr_net_no = curr_item.get_net_no(i);
                 Set<Item> connected_set = curr_item.get_connected_set(curr_net_no);
@@ -287,7 +292,9 @@ public class BatchAutorouter {
         hdlg.screen_messages.set_batch_autoroute_info(items_to_go_count, routed, ripped_item_count, not_found);
       }
 
+      //
       // Let's go through all items to route
+      //
       for (Item curr_item : autoroute_item_list) {
         // If the user requested to stop the auto-router, we stop it
         if (this.is_interrupted) {
@@ -305,7 +312,9 @@ public class BatchAutorouter {
           // We visually mark the area of the board, which is changed by the auto-router
           routing_board.start_marking_changed_area();
 
+          //
           // Do the auto-routing step for this item (typically PolylineTrace or Pin)
+          //
           SortedSet<Item> ripped_item_list = new TreeSet<>();
           if (autoroute_item(curr_item, curr_item.get_net_no(i), ripped_item_list, p_pass_no)) {
             ++routed;
