@@ -15,6 +15,14 @@ jobs:
       with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '17'
-    - uses: eskatos/gradle-command-action@v1
-      with:
-        arguments: build
+
+    - uses: gradle/actions/setup-gradle@v3-beta
+#      with:
+#        gradle-version: 8.6-rc-1
+#        cache-encryption-key: ${{ secrets.GradleEncryptionKey }}
+    - run: gradle build --configuration-cache
+
+    
+#    - uses: eskatos/gradle-command-action@v1
+#      with:
+#         arguments: build
