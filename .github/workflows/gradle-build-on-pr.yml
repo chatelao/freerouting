@@ -9,12 +9,18 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK
-      uses: actions/setup-java@v3 
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v4
       with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '17'
-    - uses: eskatos/gradle-command-action@v1
-      with:
-        arguments: build
+    - uses: gradle/actions/setup-gradle@v3-beta
+#      with:
+#        gradle-version: 8.6-rc-1
+#        cache-encryption-key: ${{ secrets.GradleEncryptionKey }}
+    - run: gradle build --configuration-cache
+
+    
+#    - uses: eskatos/gradle-command-action@v1
+#      with:
+#         arguments: build
