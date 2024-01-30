@@ -39,13 +39,20 @@ public class LocateFoundConnectionAlgo45Degree extends LocateFoundConnectionAlgo
   }
 
   /**
-   * Calculates, if the next 45-degree angle should be horizontal first when coming fromm
-   * p_from_point on p_from_door.
+   * Calculates, if the next 45-degree angle should be horizontal first,
+   * when coming from p_from_point on p_from_door.
+   *
+   * @return should be horizontal
    */
   private static boolean calc_horizontal_first_from_door(
-      ExpandableObject p_from_door, FloatPoint p_from_point, FloatPoint p_to_point) {
+      ExpandableObject p_from_door, 
+      FloatPoint p_from_point,
+      FloatPoint p_to_point
+  ) {
+
     TileShape door_shape = p_from_door.get_shape();
     IntBox from_door_box = door_shape.bounding_box();
+    
     if (p_from_door.get_dimension() != 1) {
       return from_door_box.height() >= from_door_box.width();
     }
@@ -53,31 +60,41 @@ public class LocateFoundConnectionAlgo45Degree extends LocateFoundConnectionAlgo
     FloatLine door_line_segment = door_shape.diagonal_corner_segment();
     FloatPoint left_corner;
     FloatPoint right_corner;
-    if (door_line_segment.a.x < door_line_segment.b.x
-        || door_line_segment.a.x == door_line_segment.b.x
-            && door_line_segment.a.y <= door_line_segment.b.y) {
-      left_corner = door_line_segment.a;
+    
+    if (   door_line_segment.a.x  < door_line_segment.b.x
+        ||  ( door_line_segment.a.x == door_line_segment.b.x
+           && door_line_segment.a.y <= door_line_segment.b.y)) {
+      left_corner  = door_line_segment.a;
       right_corner = door_line_segment.b;
-    } else {
-      left_corner = door_line_segment.b;
+    } else {      
+      left_corner  = door_line_segment.b;
       right_corner = door_line_segment.a;
     }
+
+    // Vector diff
     double door_dx = right_corner.x - left_corner.x;
     double door_dy = right_corner.y - left_corner.y;
+
+    // Vector positive
     double abs_door_dy = Math.abs(door_dy);
     double door_max_width = Math.max(door_dx, abs_door_dy);
+
     boolean result;
     double door_half_max_width = 0.5 * door_max_width;
+    
     if (from_door_box.width() <= door_half_max_width) {
+
       // door is about vertical
       result = true;
     } else if (from_door_box.height() <= door_half_max_width) {
+
       // door is about horizontal
       result = false;
     } else {
       double dx = p_to_point.x - p_from_point.x;
       double dy = p_to_point.y - p_from_point.y;
       if (left_corner.y < right_corner.y) {
+
         // door is about right diagonal
         if (Signum.of(dx) == Signum.of(dy)) {
           result = Math.abs(dx) > Math.abs(dy);
@@ -86,6 +103,7 @@ public class LocateFoundConnectionAlgo45Degree extends LocateFoundConnectionAlgo
         }
 
       } else {
+
         // door is about left diagonal
         if (Signum.of(dx) == Signum.of(dy)) {
           result = Math.abs(dx) < Math.abs(dy);
@@ -99,6 +117,7 @@ public class LocateFoundConnectionAlgo45Degree extends LocateFoundConnectionAlgo
 
   @Override
   protected Collection<FloatPoint> calculate_next_trace_corners() {
+    
     Collection<FloatPoint> result = new LinkedList<>();
 
     if (this.current_to_door_index > this.current_target_door_index) {
@@ -113,8 +132,6 @@ public class LocateFoundConnectionAlgo45Degree extends LocateFoundConnectionAlgo
       return result;
     }
 
-    TileShape room_shape = curr_from_info.next_room.get_shape();
-
     int trace_halfwidth = this.ctrl.compensated_trace_half_width[this.current_trace_layer];
     int trace_halfwidth_add =
         trace_halfwidth
@@ -122,13 +139,14 @@ public class LocateFoundConnectionAlgo45Degree extends LocateFoundConnectionAlgo
                 .TRACE_WIDTH_TOLERANCE; // add some tolerance for free space expansion rooms.
     int shrink_offset;
     if (curr_from_info.next_room instanceof ObstacleExpansionRoom) {
-
       shrink_offset = trace_halfwidth;
     } else {
       shrink_offset = trace_halfwidth_add;
     }
 
+    TileShape room_shape          = curr_from_info.next_room.get_shape();
     TileShape shrinked_room_shape = (TileShape) room_shape.offset(-shrink_offset);
+    
     if (!shrinked_room_shape.is_empty()) {
       // enter the shrunk room shape by a 45-degree angle first
       FloatPoint nearest_room_point =
@@ -226,13 +244,17 @@ public class LocateFoundConnectionAlgo45Degree extends LocateFoundConnectionAlgo
   }
 
   /**
-   * Calculates, if the 45-degree angle to the next door shape should be horizontal first when
-   * coming fromm p_from_point.
+   * Calculates, if the 45-degree angle to the next door shape should be 
+   * horizontal first, when coming from "p_from_point".
    */
   private boolean calc_horizontal_first_to_door(
-      ExpandableObject p_to_door, FloatPoint p_from_point, FloatPoint p_to_point) {
+      ExpandableObject p_to_door,
+      FloatPoint p_from_point, 
+      FloatPoint p_to_point) {
+    
     TileShape door_shape = p_to_door.get_shape();
     IntBox from_door_box = door_shape.bounding_box();
+    
     if (p_to_door.get_dimension() != 1) {
       return from_door_box.height() <= from_door_box.width();
     }
