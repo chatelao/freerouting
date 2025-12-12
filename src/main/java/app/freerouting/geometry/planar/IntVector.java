@@ -52,6 +52,12 @@ public class IntVector extends Vector implements Serializable
     return (x == other.x && y == other.y);
   }
 
+  @Override
+  public int hashCode()
+  {
+    return 31 * x + y;
+  }
+
   /**
    * returns true, if both coordinates of this vector are 0
    */
