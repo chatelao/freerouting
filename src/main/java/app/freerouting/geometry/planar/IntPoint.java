@@ -61,6 +61,12 @@ public class IntPoint extends Point implements Serializable
   }
 
   @Override
+  public int hashCode()
+  {
+    return 31 * x + y;
+  }
+
+  @Override
   public boolean is_infinite()
   {
     return false;
