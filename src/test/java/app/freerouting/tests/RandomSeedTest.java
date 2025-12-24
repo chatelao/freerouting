@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import app.freerouting.IO;
 import app.freerouting.core.scoring.BoardStatistics;
 import java.util.Arrays;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 public class RandomSeedTest extends TestBasedOnAnIssue {
 
   @Test

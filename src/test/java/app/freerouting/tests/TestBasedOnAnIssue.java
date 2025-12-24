@@ -13,6 +13,7 @@ import app.freerouting.settings.RouterSettings;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Random;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -29,7 +30,7 @@ public class TestBasedOnAnIssue {
   }
 
   protected RoutingJob GetRoutingJob(String filename) {
-    RoutingJob job = GetRoutingJob(filename, null);
+    RoutingJob job = GetRoutingJob(filename, new Random().nextLong());
     job.routerSettings.jobTimeoutString = "00:05:00";
     return job;
   }
@@ -109,6 +110,10 @@ public class TestBasedOnAnIssue {
         float timeoutInMinutes = timeoutInMillis / 60000.0f;
         throw new RuntimeException("Routing job timed out after " + timeoutInMinutes + " minutes.");
       }
+    }
+
+    if (job.state != RoutingJobState.COMPLETED) {
+      throw new RuntimeException("Routing job did not complete successfully.");
     }
 
     return job;
