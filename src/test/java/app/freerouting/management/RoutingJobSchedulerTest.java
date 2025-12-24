@@ -11,7 +11,7 @@ import app.freerouting.core.RoutingJob;
 import app.freerouting.core.RoutingJobState;
 import app.freerouting.core.Session;
 import app.freerouting.settings.GlobalSettings;
-import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +57,7 @@ public class RoutingJobSchedulerTest {
 
     // Assertions
     assertEquals(1, scheduler.jobs.size(), "Job queue should contain one job.");
-    assertEquals(job, scheduler.jobs.getFirst(), "Enqueued job should be in the queue.");
+    assertEquals(job, scheduler.jobs.peek(), "Enqueued job should be in the queue.");
     assertEquals(RoutingJobState.QUEUED, job.state, "Job state should be QUEUED.");
   }
 
@@ -162,8 +162,8 @@ public class RoutingJobSchedulerTest {
     return false;
   }
 
-  // Helper method to check if a job list contains a specific job
-  private boolean containsJob(LinkedList<RoutingJob> jobs, RoutingJob targetJob) {
+  // Helper method to check if a job queue contains a specific job
+  private boolean containsJob(PriorityQueue<RoutingJob> jobs, RoutingJob targetJob) {
     return jobs.contains(targetJob);
   }
 }

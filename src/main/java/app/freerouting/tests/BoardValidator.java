@@ -1,5 +1,6 @@
 package app.freerouting.tests;
 
+import app.freerouting.IO;
 import app.freerouting.board.BasicBoard;
 import app.freerouting.board.Item;
 import app.freerouting.board.PolylineTrace;

@@ -17,9 +17,9 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.UUID;
 
 /**
@@ -29,7 +29,7 @@ import java.util.UUID;
 public class RoutingJobScheduler {
 
   private static final RoutingJobScheduler instance = new RoutingJobScheduler();
-  public final LinkedList<RoutingJob> jobs = new LinkedList<>();
+  public final TreeSet<RoutingJob> jobs = new TreeSet<>();
   private final int maxParallelJobs = 5;
 
   // Private constructor to prevent instantiation
@@ -40,51 +40,38 @@ public class RoutingJobScheduler {
       while (true) {
         try {
           // loop through jobs with the READY_TO_START state, order them according to their priority and start them up to the maximum number of parallel jobs
-          while (jobs
-              .stream()
-              .count() > 0) {
-            RoutingJob[] jobsArray;
-            synchronized (jobs) {
-              // sort the jobs by priority
-              Collections.sort(jobs);
+          for (RoutingJob job : jobs) {
+            if (job.state == RoutingJobState.READY_TO_START) {
+              int parallelJobs = (int) jobs
+                  .stream()
+                  .filter(j -> j.state == RoutingJobState.RUNNING)
+                  .count();
 
-              jobsArray = jobs.toArray(RoutingJob[]::new);
-            }
-
-            // start the jobs up to the maximum number of parallel jobs (and make a copy of the list to avoid concurrent modification)
-            for (RoutingJob job : jobsArray) {
-              if (job.state == RoutingJobState.READY_TO_START) {
-                int parallelJobs = (int) jobs
-                    .stream()
-                    .filter(j -> j.state == RoutingJobState.RUNNING)
-                    .count();
-
-                if (parallelJobs < maxParallelJobs) {
-                  if ((job.input == null) || (job.input.getData() == null)) {
-                    FRLogger.warn("RoutingJob input is null, it is skipped.");
-                    job.state = RoutingJobState.INVALID;
-                    continue;
-                  }
-
-                  // load the board from the input into a RoutingBoard object
-                  if (job.input.format == FileFormat.DSN) {
-                    HeadlessBoardManager boardManager = new HeadlessBoardManager(null, job);
-                    boardManager.loadFromSpecctraDsn(job.input.getData(), null, new ItemIdentificationNumberGenerator());
-                    job.board = boardManager.get_routing_board();
-                  } else {
-                    FRLogger.warn("Only DSN format is supported as an input.");
-                    job.state = RoutingJobState.INVALID;
-                    continue;
-                  }
-
-                  // All pre-checks look fine, start the routing process on a new thread
-                  StoppableThread routerThread = new RoutingJobSchedulerActionThread(job);
-                  job.thread = routerThread;
-                  job.thread.start();
-                  job.state = RoutingJobState.RUNNING;
-                } else {
-                  break;
+              if (parallelJobs < maxParallelJobs) {
+                if ((job.input == null) || (job.input.getData() == null)) {
+                  FRLogger.warn("RoutingJob input is null, it is skipped.");
+                  job.state = RoutingJobState.INVALID;
+                  continue;
                 }
+
+                // load the board from the input into a RoutingBoard object
+                if (job.input.format == FileFormat.DSN) {
+                  HeadlessBoardManager boardManager = new HeadlessBoardManager(null, job);
+                  boardManager.loadFromSpecctraDsn(job.input.getData(), null, new ItemIdentificationNumberGenerator());
+                  job.board = boardManager.get_routing_board();
+                } else {
+                  FRLogger.warn("Only DSN format is supported as an input.");
+                  job.state = RoutingJobState.INVALID;
+                  continue;
+                }
+
+                // All pre-checks look fine, start the routing process on a new thread
+                StoppableThread routerThread = new RoutingJobSchedulerActionThread(job);
+                job.thread = routerThread;
+                job.thread.start();
+                job.state = RoutingJobState.RUNNING;
+              } else {
+                break;
               }
             }
           }
@@ -257,7 +244,7 @@ public class RoutingJobScheduler {
    */
   public int getQueuePosition(RoutingJob job) {
     synchronized (jobs) {
-      return this.jobs.indexOf(job);
+      return jobs.headSet(job).size();
     }
   }
 
@@ -269,11 +256,8 @@ public class RoutingJobScheduler {
 
   public RoutingJob[] listJobs(String sessionId) {
     synchronized (jobs) {
-      return this.jobs
-          .stream()
-          .filter(j -> j.sessionId
-              .toString()
-              .equals(sessionId))
+      return this.jobs.stream()
+          .filter(j -> j.sessionId.toString().equals(sessionId))
           .toArray(RoutingJob[]::new);
     }
   }
@@ -286,7 +270,7 @@ public class RoutingJobScheduler {
       Session[] sessions = sessionManager.getSessions(null, userId);
 
       // Iterate through the sessions and list all jobs belonging to them
-      List<RoutingJob> result = new LinkedList<>();
+      List<RoutingJob> result = new ArrayList<>();
       for (Session session : sessions) {
         // List all jobs belonging to the user in the session
         result.addAll(List.of(listJobs(session.id.toString())));
@@ -307,13 +291,12 @@ public class RoutingJobScheduler {
 
   public RoutingJob getJob(String jobId) {
     synchronized (jobs) {
-      return this.jobs
-          .stream()
-          .filter(j -> j.id
-              .toString()
-              .equals(jobId))
-          .findFirst()
-          .orElse(null);
+      for (RoutingJob job : this.jobs) {
+        if (job.id.toString().equals(jobId)) {
+          return job;
+        }
+      }
+      return null;
     }
   }
 

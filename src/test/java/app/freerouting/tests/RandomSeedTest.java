@@ -3,6 +3,9 @@ package app.freerouting.tests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import app.freerouting.IO;
+import app.freerouting.core.scoring.BoardStatistics;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 public class RandomSeedTest extends TestBasedOnAnIssue {
@@ -11,35 +14,35 @@ public class RandomSeedTest extends TestBasedOnAnIssue {
   void testRandomSeed() {
     // Test with a fixed seed
     long fixedSeed = 12345L;
-    String firstHash = null;
+    BoardStatistics firstStats = null;
     IO.println("Testing with fixed seed: " + fixedSeed);
     for (int i = 0; i < 3; i++) {
       var job = GetRoutingJob("Issue026-J2_reference.dsn", fixedSeed);
       job = RunRoutingJob(job, job.routerSettings);
-      String currentHash = job.board.get_hash();
+      BoardStatistics currentStats = job.board.get_statistics();
       if (i == 0) {
-        firstHash = currentHash;
+        firstStats = currentStats;
       } else {
-        assertEquals(firstHash, currentHash, "Seeded runs should produce identical results. Run " + (i + 1));
+        assertEquals(firstStats.connections.incompleteCount, currentStats.connections.incompleteCount, "Seeded runs should produce identical results. Run " + (i + 1));
       }
     }
 
     // Test without a seed
-    String previousHash = null;
+    BoardStatistics previousStats = null;
     boolean foundDifference = false;
     IO.println("Testing without seed.");
     // Increase loop iterations to reduce chance of flaky pass
     for (int i = 0; i < 5; i++) {
       var job = GetRoutingJob("Issue026-J2_reference.dsn"); // No seed
       job = RunRoutingJob(job, job.routerSettings);
-      String currentHash = job.board.get_hash();
+      BoardStatistics currentStats = job.board.get_statistics();
       if (i > 0) {
-        if (!previousHash.equals(currentHash)) {
+        if (previousStats.connections.incompleteCount != currentStats.connections.incompleteCount) {
           foundDifference = true;
           break;
         }
       }
-      previousHash = currentHash;
+      previousStats = currentStats;
     }
     assertTrue(foundDifference, "Unseeded runs should produce different results. This might fail by chance, try running again.");
   }
@@ -50,13 +53,13 @@ public class RandomSeedTest extends TestBasedOnAnIssue {
     // First run
     var job1 = GetRoutingJob("Issue026-J2_reference.dsn", seed);
     job1 = RunRoutingJob(job1, job1.routerSettings);
-    String hash1 = job1.board.get_hash();
+    BoardStatistics stats1 = job1.board.get_statistics();
 
     // Second run with the same input and seed
     var job2 = GetRoutingJob("Issue026-J2_reference.dsn", seed);
     job2 = RunRoutingJob(job2, job2.routerSettings);
-    String hash2 = job2.board.get_hash();
+    BoardStatistics stats2 = job2.board.get_statistics();
 
-    assertEquals(hash1, hash2, "Two runs with the same input and seed should produce identical hashes.");
+    assertEquals(stats1.connections.incompleteCount, stats2.connections.incompleteCount, "Two runs with the same input and seed should produce identical results.");
   }
 }

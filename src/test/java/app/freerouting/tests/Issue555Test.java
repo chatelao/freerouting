@@ -1,5 +1,6 @@
 package app.freerouting.tests;
 
+import app.freerouting.IO;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
