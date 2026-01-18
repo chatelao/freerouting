@@ -33,6 +33,7 @@ import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.HashSet;
 
 /**
  * Class for auto-routing an incomplete connection via a maze search algorithm.
@@ -202,13 +203,18 @@ public class MazeSearchAlgo {
    * Otherwise, the return value will be null.
    */
   public Result find_connection() {
-    while (occupy_next_element()) {
-      continue;
+    PerformanceProfiler.start("MazeSearchAlgo.find_connection");
+    try {
+      while (occupy_next_element()) {
+        continue;
+      }
+      if (this.destination_door == null) {
+        return null;
+      }
+      return new Result(this.destination_door, this.section_no_of_destination_door);
+    } finally {
+      PerformanceProfiler.end("MazeSearchAlgo.find_connection");
     }
-    if (this.destination_door == null) {
-      return null;
-    }
-    return new Result(this.destination_door, this.section_no_of_destination_door);
   }
 
   /**
@@ -216,9 +222,11 @@ public class MazeSearchAlgo {
    * expansion list is exhausted or the destination is reached.
    */
   public boolean occupy_next_element() {
-    if (this.destination_door != null) {
-      return false; // destination already reached
-    }
+    PerformanceProfiler.start("MazeSearchAlgo.occupy_next_element");
+    try {
+      if (this.destination_door != null) {
+        return false; // destination already reached
+      }
     MazeListElement list_element = null;
     MazeSearchElement curr_door_section = null;
     // Search the next element, which is not yet expanded.
@@ -289,6 +297,9 @@ public class MazeSearchAlgo {
     }
     curr_door_section.is_occupied = true;
     return true;
+    } finally {
+      PerformanceProfiler.end("MazeSearchAlgo.occupy_next_element");
+    }
   }
 
   /**
@@ -1205,7 +1216,7 @@ public class MazeSearchAlgo {
     TileShape check_shape = check_polyline.offset_shape(check_radius, 0);
     int[] ignore_net_nos = new int[1];
     ignore_net_nos[0] = this.ctrl.net_no;
-    Set<SearchTreeObject> overlapping_objects = new TreeSet<>();
+    Set<SearchTreeObject> overlapping_objects = new HashSet<>();
     this.autoroute_engine.autoroute_search_tree.overlapping_objects(check_shape, curr_layer, ignore_net_nos,
         overlapping_objects);
 

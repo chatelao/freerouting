@@ -13,10 +13,10 @@ public class Issue555Test extends TestBasedOnAnIssue {
   @Test
   @Disabled("Temporary disabled: Routing_performance_with_BBD_Mars_64")
   void test_Issue_555_Routing_performance_with_BBD_Mars_64() {
-    IO.println("Testing performance by routing reference board 'Issue555-BBD_Mars-64.dsn' with default settings.");
-    IO.println(
+    System.out.println("Testing performance by routing reference board 'Issue555-BBD_Mars-64.dsn' with default settings.");
+    System.out.println(
         "The benchmark times for Freerouting v1.8, v1.9 and v2.0 were 29.5 minutes, 27 minutes with failure and 9 minutes with partial failure.");
-    IO.println("The benchmark score for Freerouting v2.1 is 976.35, completed in 3.6 minutes.");
+    System.out.println("The benchmark score for Freerouting v2.1 is 976.35, completed in 3.6 minutes.");
     var job = GetRoutingJob("Issue555-BBD_Mars-64.dsn");
     job.routerSettings.jobTimeoutString = "00:15:00";
     job = RunRoutingJob(job, job.routerSettings);
@@ -28,7 +28,7 @@ public class Issue555Test extends TestBasedOnAnIssue {
       var scoreBeforeOptimization = bs.getNormalizedScore(job.routerSettings.scoring);
       Duration routingDuration = Duration.between(job.startedAt, job.finishedAt);
 
-      IO.println(
+      System.out.println(
           "Routing was completed in " + FRLogger.formatDuration(routingDuration.toSeconds()) + " with the score of "
               + FRLogger.formatScore(scoreBeforeOptimization, bs.connections.incompleteCount,
                   bs.clearanceViolations.totalCount)
@@ -44,11 +44,11 @@ public class Issue555Test extends TestBasedOnAnIssue {
   @Test
   @Disabled("Temporary disabled: Routing_performance_with_CNH_Functional_Tester_1")
   void test_Issue_555_Routing_performance_with_CNH_Functional_Tester_1() {
-    IO.println(
+    System.out.println(
         "Testing performance by routing reference board 'Issue555-CNH_Functional_Tester_1.dsn' with default settings.");
-    IO.println(
+    System.out.println(
         "The benchmark times for Freerouting v1.8, v1.9 and v2.0 were 12 seconds (4 unrouted), 10 seconds (4 unrouted) and 11 seconds (4 unrouted) in 6 passes.");
-    IO.println(
+    System.out.println(
         "The benchmark score for Freerouting v2.1 is 962.18 (6 unrouted), completed in 54 seconds, hitting the 40 pass limit.");
     var job = GetRoutingJob("Issue555-CNH_Functional_Tester_1.dsn");
     job.routerSettings.jobTimeoutString = "00:03:00";
