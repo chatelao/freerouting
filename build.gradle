@@ -25,7 +25,7 @@ java.toolchain {
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+    options.compilerArgs.addAll(['--enable-preview', '-Xlint:unchecked', '-Xlint:deprecation'])
 }
 
 // javadoc is way too strict for my taste.
@@ -138,6 +138,9 @@ dependencies {
     rewrite 'org.openrewrite.recipe:rewrite-static-analysis:2.23.0'
     rewrite 'org.openrewrite.recipe:rewrite-migrate-java:3.23.0'
     rewrite 'org.openrewrite.recipe:rewrite-recommendations:1.15.0'
+
+    // Aparapi
+    implementation 'com.aparapi:aparapi:3.0.0'
 }
 
 ext {
@@ -259,6 +262,7 @@ tasks.register('buildDockerImage', Exec) {
 }
 
 test {
+    jvmArgs '--enable-preview'
     testLogging {
         showExceptions = true
         showStandardStreams = true
