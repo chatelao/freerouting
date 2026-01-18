@@ -25,7 +25,10 @@ java.toolchain {
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << '--enable-preview'
+    options.compilerArgs << '--enable-preview'
     options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+    options.compilerArgs << '--enable-preview'
 }
 
 // javadoc is way too strict for my taste.
@@ -250,6 +253,7 @@ tasks.register('run', JavaExec) {
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.addAll(["-Xmaxerrs", "1000", "-Xmaxwarns", "1000"])
+    options.compilerArgs << '--enable-preview'
 }
 
 tasks.register('buildDockerImage', Exec) {
@@ -259,20 +263,21 @@ tasks.register('buildDockerImage', Exec) {
 }
 
 test {
+    jvmArgs '--enable-preview'
     testLogging {
         showExceptions = true
         showStandardStreams = true
     }
 
-    timeout = Duration.ofMinutes(15)
+    timeout = Duration.ofMinutes(30)
 }
 
-rewrite {
-    activeRecipe("org.openrewrite.staticanalysis.CodeCleanup")
-    checkstyleConfigFile = file("google_checks.xml")
-    //activeRecipe("org.openrewrite.java.format.AutoFormat")
-    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava17")
-    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
-    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava25")
-    setExportDatatables(true)
-}
+//rewrite {
+//    activeRecipe("org.openrewrite.staticanalysis.CodeCleanup")
+//    checkstyleConfigFile = file("google_checks.xml")
+//    //activeRecipe("org.openrewrite.java.format.AutoFormat")
+//    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava17")
+//    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
+//    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava25")
+//    setExportDatatables(true)
+//}

@@ -28,11 +28,6 @@ public class RoutingJobSchedulerTest {
 
   }
 
-  @AfterEach
-  void tearDown() {
-    // Clear the job queue after each test
-    scheduler.jobs.clear();
-  }
 
   @Test
   void testGetInstance() {

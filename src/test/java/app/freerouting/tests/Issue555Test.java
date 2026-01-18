@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import app.freerouting.logger.FRLogger;
+import app.freerouting.logger.IO;
 import java.time.Duration;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,10 @@ public class Issue555Test extends TestBasedOnAnIssue {
     System.out.println("The benchmark score for Freerouting v2.1 is 976.35, completed in 3.6 minutes.");
     var job = GetRoutingJob("Issue555-BBD_Mars-64.dsn");
     job.routerSettings.jobTimeoutString = "00:15:00";
+    app.freerouting.autoroute.PerformanceProfiler.start("routing");
     job = RunRoutingJob(job, job.routerSettings);
+    app.freerouting.autoroute.PerformanceProfiler.end("routing");
+    app.freerouting.autoroute.PerformanceProfiler.printResults();
 
     if (job.output == null) {
       fail("Routing job failed.");

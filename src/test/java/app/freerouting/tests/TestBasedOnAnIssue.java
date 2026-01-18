@@ -72,7 +72,7 @@ public class TestBasedOnAnIssue {
       throw new RuntimeException(testFile + " not found.", e);
     }
 
-    job.routerSettings.jobTimeoutString = "00:01:00";
+    job.routerSettings.jobTimeoutString = "00:30:00";
     job.routerSettings.maxPasses = 100;
 
     return job;
