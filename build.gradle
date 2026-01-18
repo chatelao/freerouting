@@ -14,18 +14,18 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 java.toolchain {
-    languageVersion = JavaLanguageVersion.of(25)
+    languageVersion = JavaLanguageVersion.of(21)
 }
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+    options.compilerArgs.addAll(['--enable-preview', '-Xlint:unchecked', '-Xlint:deprecation'])
 }
 
 // javadoc is way too strict for my taste.
@@ -263,8 +263,8 @@ test {
         showExceptions = true
         showStandardStreams = true
     }
-
-    timeout = Duration.ofMinutes(15)
+    jvmArgs '--enable-preview'
+    timeout = Duration.ofMinutes(10)
 }
 
 rewrite {
