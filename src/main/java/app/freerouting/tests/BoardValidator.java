@@ -36,7 +36,7 @@ public class BoardValidator {
     }
     for (int layer = 0; layer < layer_count; layer++) {
       if (first_time) {
-        IO.println(" validate board is on ");
+        System.out.println(" validate board is on ");
         first_time = false;
       }
       Collection<SearchTreeObject> l = p_board.overlapping_objects(surr_oct, layer);
@@ -46,7 +46,7 @@ public class BoardValidator {
       for (SearchTreeObject search_tree_object : l) {
         Item curr_ob = (Item) search_tree_object;
         if (!curr_ob.validate()) {
-          IO.println(p_s);
+          System.out.println(p_s);
         }
         int cl_count = curr_ob.clearance_violation_count();
         if (cl_count > 0) {
@@ -58,17 +58,17 @@ public class BoardValidator {
         }
       }
       if (conflict_ob_count == 1) {
-        IO.println("conflicts not symmetric");
+        System.out.println("conflicts not symmetric");
       }
       if (clearance_violation_count != last_violation_count[layer]) {
         result = false;
-        IO.print(clearance_violation_count);
-        IO.print(" clearance violations on layer ");
-        IO.print(layer);
-        IO.print(" ");
-        IO.println(p_s);
+        System.out.print(clearance_violation_count);
+        System.out.print(" clearance violations on layer ");
+        System.out.print(layer);
+        System.out.print(" ");
+        System.out.println(p_s);
         if (clearance_violation_count > 0) {
-          IO.print("with items of nets: ");
+          System.out.print("with items of nets: ");
         }
         for (SearchTreeObject search_tree_object : l) {
           Item curr_ob = (Item) search_tree_object;
@@ -83,10 +83,10 @@ public class BoardValidator {
               curr_net_no = curr_trace.get_net_no(0);
             }
           }
-          IO.print(curr_net_no);
-          IO.print(", ");
+          System.out.print(curr_net_no);
+          System.out.print(", ");
         }
-        IO.println();
+        System.out.println();
       }
       if (clearance_violation_count != last_violation_count[layer]) {
         last_violation_count[layer] = clearance_violation_count;
@@ -101,8 +101,8 @@ public class BoardValidator {
       Collection<Item> obstacles = p_board.search_tree_manager.get_default_tree().overlapping_items_with_clearance(offset_shapes[i], p_layer, p_net_no_arr, p_cl_type);
       for (Item curr_obs : obstacles) {
         if (!curr_obs.shares_net_no(p_net_no_arr)) {
-          IO.print(p_s);
-          IO.println(": cannot insert trace without violations");
+          System.out.print(p_s);
+          System.out.println(": cannot insert trace without violations");
           return false;
         }
       }
@@ -117,8 +117,8 @@ public class BoardValidator {
     for (Item curr_ob : p_board.get_items()) {
       if (curr_ob instanceof PolylineTrace curr_trace) {
         if (!curr_trace.polyline().is_orthogonal()) {
-          IO.print(p_s);
-          IO.println(": trace not orthogonal");
+          System.out.print(p_s);
+          System.out.println(": trace not orthogonal");
           break;
         }
       }
@@ -138,17 +138,17 @@ public class BoardValidator {
       }
     }
     if (count > 1) {
-      IO.print(p_s);
-      IO.print(count);
-      IO.println(" traces not 45 degree");
+      System.out.print(p_s);
+      System.out.print(count);
+      System.out.println(" traces not 45 degree");
     }
   }
 
   public static boolean corners_on_grid(String p_s, Polyline p_polyline) {
     for (int i = 0; i < p_polyline.corner_count(); i++) {
       if (!(p_polyline.corner(i) instanceof IntPoint)) {
-        IO.print(p_s);
-        IO.println(": corner not on grid");
+        System.out.print(p_s);
+        System.out.println(": corner not on grid");
         return false;
       }
     }
@@ -157,7 +157,7 @@ public class BoardValidator {
 
   public static int stub_count(String p_s, BasicBoard p_board, int p_net_no) {
     if (first_time) {
-      IO.println(" stub_count is on ");
+      System.out.println(" stub_count is on ");
       first_time = false;
     }
     int result = 0;
@@ -174,8 +174,8 @@ public class BoardValidator {
       }
     }
     if (result != prev_stub_count) {
-      IO.print(result + " stubs ");
-      IO.println(p_s);
+      System.out.print(result + " stubs ");
+      System.out.println(p_s);
       prev_stub_count = result;
     }
     return result;
@@ -188,8 +188,8 @@ public class BoardValidator {
         continue;
       }
       if (((Trace) curr_item).is_cycle()) {
-        IO.print(p_s);
-        IO.println(": cycle found");
+        System.out.print(p_s);
+        System.out.println(": cycle found");
         result = true;
         break;
       }
@@ -210,10 +210,10 @@ public class BoardValidator {
       }
     }
     if (found_traces > p_max_count) {
-      IO.print(p_s);
-      IO.print(": ");
-      IO.print(p_max_count);
-      IO.println(" traces exceeded");
+      System.out.print(p_s);
+      System.out.print(": ");
+      System.out.print(p_max_count);
+      System.out.println(" traces exceeded");
       return true;
     }
     return false;
@@ -227,8 +227,8 @@ public class BoardValidator {
       if (curr_item.is_routable()) {
         Collection<Item> contact_list = curr_item.get_normal_contacts();
         if (contact_list.isEmpty()) {
-          IO.print(p_s);
-          IO.print(": uncontacted routing item found ");
+          System.out.print(p_s);
+          System.out.print(": uncontacted routing item found ");
           return true;
         }
       }

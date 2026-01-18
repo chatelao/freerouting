@@ -39,3 +39,10 @@ gha-creds-*.json
 
 # Agent files
 /.agent
+
+# Profiler files
+async-profiler-*
+*.tar.gz
+profile.html
+build.log
+test_output.log

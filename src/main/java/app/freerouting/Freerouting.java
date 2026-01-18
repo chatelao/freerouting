@@ -157,7 +157,7 @@ public class Freerouting {
       }
     } else {
       // Print to console
-      IO.println(drcReportJson);
+      System.out.println(drcReportJson);
     }
 
     return true;
@@ -461,7 +461,7 @@ public class Freerouting {
     // check if the user wants to see the help only
     if (globalSettings.show_help_option) {
       TextManager ctm = new TextManager(Freerouting.class, globalSettings.currentLocale);
-      IO.print(ctm.getText("command_line_help"));
+      System.out.print(ctm.getText("command_line_help"));
       System.exit(0);
     }
 
