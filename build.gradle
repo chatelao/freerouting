@@ -14,18 +14,21 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 java.toolchain {
-    languageVersion = JavaLanguageVersion.of(25)
+    languageVersion = JavaLanguageVersion.of(21)
 }
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << '--enable-preview'
+    options.compilerArgs << '--enable-preview'
     options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+    options.compilerArgs << '--enable-preview'
 }
 
 // javadoc is way too strict for my taste.
@@ -250,6 +253,7 @@ tasks.register('run', JavaExec) {
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.addAll(["-Xmaxerrs", "1000", "-Xmaxwarns", "1000"])
+    options.compilerArgs << '--enable-preview'
 }
 
 tasks.register('buildDockerImage', Exec) {
