@@ -9,6 +9,9 @@ import app.freerouting.geometry.planar.IntOctagon;
 import app.freerouting.geometry.planar.IntPoint;
 import app.freerouting.geometry.planar.Polyline;
 import app.freerouting.geometry.planar.TileShape;
+import app.freerouting.logger.IO;
+import app.freerouting.logger.IO;
+import app.freerouting.logger.IO;
 import java.util.Collection;
 
 /**

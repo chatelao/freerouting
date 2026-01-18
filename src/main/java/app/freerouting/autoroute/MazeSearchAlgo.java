@@ -22,7 +22,6 @@ import app.freerouting.geometry.planar.IntOctagon;
 import app.freerouting.geometry.planar.IntPoint;
 import app.freerouting.geometry.planar.Line;
 import app.freerouting.geometry.planar.Point;
-import app.freerouting.datastructures.MinHeap;
 import app.freerouting.geometry.planar.Polyline;
 import app.freerouting.geometry.planar.TileShape;
 import app.freerouting.logger.FRLogger;
@@ -30,6 +29,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -48,7 +48,7 @@ public class MazeSearchAlgo {
   /**
    * The queue of expanded elements used in this search algorithm.
    */
-  final MinHeap<MazeListElement> maze_expansion_list;
+  final PriorityQueue<MazeListElement> maze_expansion_list;
 
   /**
    * Used for calculating of a good lower bound for the distance between a new
@@ -74,7 +74,7 @@ public class MazeSearchAlgo {
     autoroute_engine = p_autoroute_engine;
     ctrl = p_ctrl;
     this.search_tree = p_autoroute_engine.autoroute_search_tree;
-    maze_expansion_list = new MinHeap<>(Comparator.comparingDouble(o -> o.sorting_value));
+    maze_expansion_list = new PriorityQueue<>(Comparator.comparingDouble(o -> o.sorting_value));
     destination_distance = new DestinationDistance(ctrl.trace_costs, ctrl.layer_active, ctrl.min_normal_via_cost,
         ctrl.min_cheap_via_cost);
   }
@@ -222,11 +222,19 @@ public class MazeSearchAlgo {
     MazeListElement list_element = null;
     MazeSearchElement curr_door_section = null;
     // Search the next element, which is not yet expanded.
+    // Use poll() to efficiently get and remove the best element (O(log n) instead
+    // of O(n))
     boolean next_element_found = false;
-    while ((list_element = this.maze_expansion_list.poll()) != null) {
+    while (!maze_expansion_list.isEmpty()) {
       if (this.autoroute_engine.is_stop_requested()) {
         return false;
       }
+
+      list_element = maze_expansion_list.poll(); // O(log n) - gets highest priority element
+      if (list_element == null) {
+        break; // Queue unexpectedly empty
+      }
+
       int curr_section_no = list_element.section_no_of_door;
       curr_door_section = list_element.door.get_maze_search_element(curr_section_no);
 
@@ -234,7 +242,7 @@ public class MazeSearchAlgo {
         next_element_found = true;
         break;
       }
-      // element already occupied, try next one
+      // Element already occupied, recycle and continue
       MazeListElement.recycle(list_element);
     }
     if (!next_element_found) {

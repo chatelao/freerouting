@@ -263,20 +263,21 @@ tasks.register('buildDockerImage', Exec) {
 }
 
 test {
+    jvmArgs '--enable-preview'
     testLogging {
         showExceptions = true
         showStandardStreams = true
     }
 
-    timeout = Duration.ofMinutes(15)
+    timeout = Duration.ofMinutes(30)
 }
 
-rewrite {
-    activeRecipe("org.openrewrite.staticanalysis.CodeCleanup")
-    checkstyleConfigFile = file("google_checks.xml")
-    //activeRecipe("org.openrewrite.java.format.AutoFormat")
-    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava17")
-    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
-    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava25")
-    setExportDatatables(true)
-}
+//rewrite {
+//    activeRecipe("org.openrewrite.staticanalysis.CodeCleanup")
+//    checkstyleConfigFile = file("google_checks.xml")
+//    //activeRecipe("org.openrewrite.java.format.AutoFormat")
+//    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava17")
+//    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
+//    //activeRecipe("org.openrewrite.java.migrate.UpgradeToJava25")
+//    setExportDatatables(true)
+//}

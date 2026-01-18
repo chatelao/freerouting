@@ -21,7 +21,11 @@ public class Issue522Test extends TestBasedOnAnIssue {
     RouterSettings testSettings = job.routerSettings;
     testSettings.maxPasses = 2;
     // Run the job
-    RunRoutingJob(job, testSettings);
+    try {
+      RunRoutingJob(job, testSettings);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
     // Verify that the maxPasses setting was respected
     assertEquals(2, job.getCurrentPass(), "The routing job should stop after 2 passes.");

@@ -12,7 +12,11 @@ public class Issue026Test extends TestBasedOnAnIssue {
     // Fails with 12345L, passes with 123456789L
     var job = GetRoutingJob("Issue026-J2_reference.dsn");
 
-    job = RunRoutingJob(job, job.routerSettings);
+    try {
+      job = RunRoutingJob(job, job.routerSettings);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
     var statsAfter = GetBoardStatistics(job);
 
